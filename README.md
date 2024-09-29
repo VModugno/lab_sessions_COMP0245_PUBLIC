@@ -1,0 +1,2 @@
+# lab_sessions_COMP0245_PUBLIC
+lab_sessions_COMP0245 accessible to everyone
