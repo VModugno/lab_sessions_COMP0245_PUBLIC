@@ -115,14 +115,10 @@ def objective(params):
     kd = np.array(params[7:])  # Last 7 elements correspond to kd
     episode_duration = 10
     
-    # Call the simulation with given kp and kd values
-    # TODO to remove for final version
-    tracking_error = simulate_with_given_pid_values(sim, kp, kd, episode_duration)
+    # TODO Call the simulation with given kp and kd values
 
-    # Collect data for the first kp and kd TODO to remove for final version
-    kp0_values.append(kp[0])
-    kd0_values.append(kd[0])
-    tracking_errors.append(tracking_error)
+    # TODO Collect data for the first kp and kd  
+    
     
     return tracking_error
 
@@ -153,7 +149,7 @@ def main():
     space,
     n_calls=10,
     base_estimator=gp,  # Use the custom Gaussian Process Regressor
-    acq_func='EI',      # LCB': Lower Confidence Bound 'EI': Expected Improvement 'PI': Probability of Improvement
+    acq_func='EI',      # TODO change this LCB': Lower Confidence Bound 'EI': Expected Improvement 'PI': Probability of Improvement
     random_state=42)
     
     # Extract the optimal values
