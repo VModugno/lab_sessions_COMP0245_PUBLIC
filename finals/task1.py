@@ -111,7 +111,7 @@ for i in range(len(t)):
     tau = k_p * (q_target[i] - q_test) + k_d * (dot_q_target[i] - dot_q_test)
     inputs = torch.tensor([q_test, dot_q_test, q_target[i], dot_q_target[i]], dtype=torch.float32)
     correction = model(inputs.unsqueeze(0)).item()
-    ddot_q_corrected =(tau - b * dot_q_test + correction) / m
+    ddot_q_corrected =(tau - b * dot_q_test ) / m + correction
     dot_q_test += ddot_q_corrected * dt
     q_test += dot_q_test * dt
     q_real_corrected.append(q_test)
