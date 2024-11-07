@@ -1,3 +1,4 @@
+import os
 import time
 
 import matplotlib.pyplot as plt
@@ -6,6 +7,14 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
+
+TASK = 1.1  # choose from 1.1, 1.2, 1.3, 1.4
+CUR_DIR = os.path.dirname(os.path.realpath(__file__))  # current directory
+DIR = os.path.join(CUR_DIR, "figures", f"task{TASK}")  # figure directory
+EXT = "pdf"  # figure extension
+os.makedirs(DIR, exist_ok=True)  # create figure directory if not exist
+print(f"Performing Task {TASK}...")
+
 
 # Constants
 m = 1.0  # Mass (kg)
