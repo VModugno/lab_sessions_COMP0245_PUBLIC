@@ -1,4 +1,5 @@
 import os
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,12 +8,11 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 
-TASK = 1.1  # choose from 1.1, 1.2, 1.3, 1.4
-CUR_DIR = os.path.dirname(os.path.realpath(__file__))  # current directory
-DIR = os.path.join(CUR_DIR, "figures", f"task{TASK}")  # figure directory
+TASKS = [1.1, 1.2, 1.3, 1.4]  # choose one or multiple from 1.1, 1.2, 1.3, 1.4
+TASKS = [1.2]
+CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+FIG_BASE_DIR = os.path.join(CUR_DIR, "figures")
 EXT = "pdf"  # figure extension
-os.makedirs(DIR, exist_ok=True)  # create figure directory if not exist
-print(f"Performing Task {TASK}...")
 
 
 # Constants
@@ -57,10 +57,6 @@ for i in range(num_samples):
 X_tensor = torch.tensor(X, dtype=torch.float32)
 Y_tensor = torch.tensor(Y, dtype=torch.float32).view(-1, 1)
 
-# Dataset and DataLoader
-train_dataset = TensorDataset(X_tensor, Y_tensor)
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-
 
 # MLP Model Definition
 class ShallowCorrectorMLP(nn.Module):
@@ -92,79 +88,177 @@ class DeepCorrectorMLP(nn.Module):
         return self.layers(x)
 
 
-# Model, Loss, Optimizer
-# model = ShallowCorrectorMLP(num_hidden_units=64)
-model = DeepCorrectorMLP()
-criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=1e-1)  # 1e-3)
+def train_and_evaluate_model(
+    model_class, num_hidden_units=32, lr=1e-1, batch_size=32
+):
+    model = model_class(num_hidden_units)
+    criterion = nn.MSELoss()
+    optimizer = optim.Adam(model.parameters(), lr)
 
-# Training Loop
-epochs = 100
-train_losses = []
+    train_dataset = TensorDataset(X_tensor, Y_tensor)
+    train_loader = DataLoader(train_dataset, batch_size, shuffle=True)
 
-model.train()
+    # Training Loop
+    epochs = 100
+    train_losses = []
 
-for epoch in range(epochs):
-    epoch_loss = 0
-    for data, target in train_loader:
-        optimizer.zero_grad()
-        output = model(data)
-        loss = criterion(output, target)
-        loss.backward()
-        optimizer.step()
-        epoch_loss += loss.item()
+    model.train()
 
-    train_losses.append(epoch_loss / len(train_loader))
-    print(f"Epoch {epoch+1}/{epochs}, Loss: {train_losses[-1]:.6f}")
+    start_time = time.time()
+    for epoch in range(epochs):
+        epoch_loss = 0
+        for data, target in train_loader:
+            optimizer.zero_grad()
+            output = model(data)
+            loss = criterion(output, target)
+            loss.backward()
+            optimizer.step()
+            epoch_loss += loss.item()
 
-# Testing Phase: Simulate trajectory tracking
-q_test = 0
-dot_q_test = 0
-q_real = []
-q_real_corrected = []
+        train_losses.append(epoch_loss / len(train_loader))
+        print(
+            f"Epoch {epoch+1}/{epochs}, Loss: {train_losses[-1]:.6f}, Time: {time.time() - start_time:.2f}s"
+        )
+    train_time = time.time() - start_time
 
-# integration with only PD Control
-for i in range(len(t)):
-    tau = k_p * (q_target[i] - q_test) + k_d * (dot_q_target[i] - dot_q_test)
-    ddot_q_real = (tau - b * dot_q_test) / m
-    dot_q_test += ddot_q_real * dt
-    q_test += dot_q_test * dt
-    q_real.append(q_test)
+    # Testing Phase: Simulate trajectory tracking
+    q_test = 0
+    dot_q_test = 0
+    q_real = []
+    q_real_corrected = []
 
-model.eval()
+    # integration with only PD Control
+    for i in range(len(t)):
+        tau = k_p * (q_target[i] - q_test) + k_d * (
+            dot_q_target[i] - dot_q_test
+        )
+        ddot_q_real = (tau - b * dot_q_test) / m
+        dot_q_test += ddot_q_real * dt
+        q_test += dot_q_test * dt
+        q_real.append(q_test)
 
-q_test = 0
-dot_q_test = 0
-for i in range(len(t)):
-    # Apply MLP correction
-    tau = k_p * (q_target[i] - q_test) + k_d * (dot_q_target[i] - dot_q_test)
-    inputs = torch.tensor(
-        [q_test, dot_q_test, q_target[i], dot_q_target[i]], dtype=torch.float32
+    model.eval()
+
+    q_test = 0
+    dot_q_test = 0
+    for i in range(len(t)):
+        # Apply MLP correction
+        tau = k_p * (q_target[i] - q_test) + k_d * (
+            dot_q_target[i] - dot_q_test
+        )
+        inputs = torch.tensor(
+            [q_test, dot_q_test, q_target[i], dot_q_target[i]],
+            dtype=torch.float32,
+        )
+        with torch.no_grad():
+            correction = model(inputs.unsqueeze(0)).item()
+        ddot_q_corrected = (tau - b * dot_q_test) / m + correction
+        dot_q_test += ddot_q_corrected * dt
+        q_test += dot_q_test * dt
+        q_real_corrected.append(q_test)
+    return train_losses, train_time, q_real, q_real_corrected
+
+
+hidden_units_list = range(32, 129, 32)
+learning_rates = [1.0, 1e-1, 1e-2, 1e-3, 1e-4]
+batch_sizes = [64, 128, 256, 1000]
+model_classes = [ShallowCorrectorMLP, DeepCorrectorMLP]
+
+
+if 1.1 in TASKS:
+    print("=" * 20, "Task 1.1", "=" * 20)
+    for num_hidden_units in hidden_units_list:
+        train_losses, train_time, q_real, q_real_corrected = (
+            train_and_evaluate_model(ShallowCorrectorMLP, num_hidden_units)
+        )
+        FIG_DIR = os.path.join(
+            FIG_BASE_DIR, "task1_1_alt", f"hidden_units_{num_hidden_units}"
+        )
+        os.makedirs(FIG_DIR, exist_ok=True)
+        # Plot results
+        plt.figure(figsize=(12, 6))
+        plt.plot(t, q_target, "r-", label="Target")
+        plt.plot(t, q_real, "b--", label="PD Only")
+        plt.plot(t, q_real_corrected, "g:", label="PD + MLP Correction")
+        plt.title("Trajectory Tracking with and without MLP Correction")
+        plt.xlabel("Time [s]")
+        plt.ylabel("Position")
+        plt.legend()
+        plt.savefig(f"{FIG_DIR}/trajectory.{EXT}")
+
+        # Plot the errors
+        plt.figure(figsize=(12, 6))
+        plt.plot(t, q_target - q_real, "b--", label="PD Only")
+        plt.plot(
+            t, q_target - q_real_corrected, "g:", label="PD + MLP Correction"
+        )
+        plt.title("Trajectory Tracking Error with and without MLP Correction")
+        plt.xlabel("Time [s]")
+        plt.ylabel("Position")
+        plt.legend()
+        plt.savefig(f"{FIG_DIR}/error.{EXT}")
+        plt.close("all")
+
+if 1.2 in TASKS:
+    print("=" * 20, "Task 1.2", "=" * 20)
+    results = {}
+    for num_hidden_units in hidden_units_list:
+        results[num_hidden_units] = {}
+        for model_class in model_classes:
+            class_name = model_class.__name__
+            results[num_hidden_units][class_name] = train_and_evaluate_model(
+                model_class, num_hidden_units
+            )
+        FIG_DIR = os.path.join(
+            FIG_BASE_DIR, "task1_2_alt", f"hidden_units_{num_hidden_units}"
+        )
+        os.makedirs(FIG_DIR, exist_ok=True)
+        plt.figure(figsize=(12, 6))
+        plt.plot(t, q_target, "r-", label="Target")
+        for model_name, (_, _, _, q_real_corrected) in results[
+            num_hidden_units
+        ].items():
+            plt.plot(t, q_real_corrected, label=model_name)
+        plt.title("Trajectory Tracking with MLP Correction")
+        plt.xlabel("Time [s]")
+        plt.ylabel("Position")
+        plt.legend()
+        plt.savefig(f"{FIG_DIR}/trajectory.{EXT}")
+
+        plt.figure(figsize=(12, 6))
+        for model_name, (_, _, _, q_real_corrected) in results[
+            num_hidden_units
+        ].items():
+            plt.plot(t, q_target - q_real_corrected, label=model_name)
+        plt.title("Trajectory Tracking Error with MLP Correction")
+        plt.xlabel("Time [s]")
+        plt.ylabel("Position")
+        plt.legend()
+        plt.savefig(f"{FIG_DIR}/error.{EXT}")
+        plt.close("all")
+    final_loss = []
+    for i, model_class in enumerate(model_classes):
+        final_loss.append([])
+        for num_hidden_units in hidden_units_list:
+            final_loss[i].append(
+                results[num_hidden_units][model_class.__name__][0][-1]
+            )
+    fix, ax = plt.subplots(figsize=(12, 6))
+    im = ax.imshow(final_loss)
+    ax.set_xticks(np.arange(len(hidden_units_list)), labels=hidden_units_list)
+    ax.set_yticks(
+        np.arange(len(model_classes)),
+        labels=[m.__name__ for m in model_classes],
     )
-    with torch.no_grad():
-        correction = model(inputs.unsqueeze(0)).item()
-    ddot_q_corrected = (tau - b * dot_q_test + correction) / m
-    dot_q_test += ddot_q_corrected * dt
-    q_test += dot_q_test * dt
-    q_real_corrected.append(q_test)
+    ax.set_xlabel("Hidden Units")
+    ax.set_ylabel("Model")
+    ax.set_title("Final Loss for Different Models and Hidden Units")
+    plt.colorbar(im)
+    plt.savefig(f"{FIG_BASE_DIR}/task1_2_alt/final_loss.{EXT}")
+    plt.close("all")
 
-# Plot results
-plt.figure(figsize=(12, 6))
-plt.plot(t, q_target, "r-", label="Target")
-plt.plot(t, q_real, "b--", label="PD Only")
-plt.plot(t, q_real_corrected, "g:", label="PD + MLP Correction")
-plt.title("Trajectory Tracking with and without MLP Correction")
-plt.xlabel("Time [s]")
-plt.ylabel("Position")
-plt.legend()
-plt.show()
+if 1.3 in TASKS:
+    pass
 
-# Plot the errors
-plt.figure(figsize=(12, 6))
-plt.plot(t, q_target - q_real, "b--", label="PD Only")
-plt.plot(t, q_target - q_real_corrected, "g:", label="PD + MLP Correction")
-plt.title("Trajectory Tracking Error with and without MLP Correction")
-plt.xlabel("Time [s]")
-plt.ylabel("Position")
-plt.legend()
-plt.show()
+if 1.4 in TASKS:
+    pass
