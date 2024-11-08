@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 from torch.utils.data import DataLoader, Dataset
 
 TASK = 2.1
@@ -225,6 +226,7 @@ if training_flag:
                 plt.title(f"Loss Curve for Joint {joint_idx+1}")
                 plt.legend()
                 plt.grid(True)
+                plt.savefig(f"{DIR}/losses_joint_{joint_idx+1}.{EXT}")             
                 plt.show()
 
                 # Plot true vs predicted positions on the test set
@@ -262,6 +264,7 @@ if training_flag:
                 )
                 plt.legend()
                 plt.grid(True)
+                plt.savefig(f"{DIR}/test_pos_prediction_joint_{joint_idx+1}.{EXT}") 
                 plt.show()
 
         print("Training and visualization completed.")
@@ -375,8 +378,8 @@ if test_cartesian_accuracy_flag:
     )
     print(f"Initial joint angles: {init_joint_angles}")
 
-    for goal_position in goal_positions:
-        print("Testing new goal position------------------------------------")
+    for ii, goal_position in enumerate(goal_positions):
+        print(f"Testing {ii+1} goal position------------------------------------")
 
         # Create test input features
         test_goal_positions = np.tile(
@@ -434,6 +437,10 @@ if test_cartesian_accuracy_flag:
         print(
             f"Position error between computed position and goal: {position_error}"
         )
+        mse = mean_squared_error(final_cartesian_pos, goal_position)
+        print(
+            f"MSE between computed position and goal: {mse}"
+        )
 
         # Optional: Visualize the cartesian trajectory over time
         if visualize:
@@ -466,12 +473,15 @@ if test_cartesian_accuracy_flag:
                 cartesian_positions_over_time[:, 2],
                 label="Z Position",
             )
+            plt.scatter([test_time_array[-1]] * 3, goal_position, s=50, c='red', label="Goal position")
             plt.xlabel("Time (s)")
             plt.ylabel("Cartesian Position (m)")
             plt.title("Predicted Cartesian Positions Over Time")
             plt.legend()
             plt.grid(True)
-            plt.show()
+            os.makedirs(f"{DIR}/testing", exist_ok=True)
+            plt.savefig(f"{DIR}/testing/predicted_pos_goal_{ii+1}.{EXT}")
+            #plt.show()
 
             # Plot the trajectory in 3D space
             from mpl_toolkits.mplot3d import Axes3D
@@ -496,4 +506,5 @@ if test_cartesian_accuracy_flag:
             ax.set_zlabel("Z Position (m)")
             ax.set_title("Predicted Cartesian Trajectory")
             plt.legend()
-            plt.show()
+            plt.savefig(f"{DIR}/testing/predicted_trajectory_{ii+1}.{EXT}")
+            #plt.show()
