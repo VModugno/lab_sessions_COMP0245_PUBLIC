@@ -14,14 +14,14 @@ DIR = os.path.join(CUR_DIR, "figures", f"task{TASK}")  # figure directory
 EXT = "pdf"  # figure extension
 os.makedirs(DIR, exist_ok=True)  # create figure directory if not exist
 RF_MODEL_DIR = "rf"
-DEPTH = 8
+DEPTH = 4
 DEPTH_STR = str(DEPTH) if DEPTH else 'none'
 print(f"Performing Task {TASK}...")
 
 
 # Set the visualization flag
 visualize = True  # Set to True to enable visualization, False to disable
-training_flag = True  # Set to True to train the models, False to skip training
+training_flag = False  # Set to True to train the models, False to skip training
 test_cartesian_accuracy_flag = True  # Set to True to test the model with a new goal position, False to skip testing
 
 if training_flag:
@@ -42,6 +42,19 @@ if training_flag:
         time_array = np.array(data["time"])  # Shape: (N,)
         q_mes_all = np.array(data["q_mes_all"])  # Shape: (N, 7)
         goal_positions = np.array(data["goal_positions"])  # Shape: (N, 3)
+
+        # Visualizing training data
+        # for iii in range(7):
+        #     plt.figure()
+        #     plt.plot(time_array, q_mes_all[:, iii], label=f"Joint {iii+1}")
+        #     plt.xlabel("Time (s)")
+        #     plt.ylabel("Joint Position (rad)")
+        #     plt.title(
+        #         f"All Recorded Trajectories for Joint {iii+1}"
+        #     )
+        #     plt.legend()
+        #     plt.savefig(f'joint_{iii+1}.pdf')
+        #     plt.show()
 
         # Optional: Normalize time data for better performance
         # time_array = (time_array - time_array.min()) / (time_array.max() - time_array.min())
@@ -195,14 +208,16 @@ if test_cartesian_accuracy_flag:
     # Create a set of goal positions
     number_of_goal_positions_to_test = 10
     goal_positions = []
-    for i in range(number_of_goal_positions_to_test):
-        goal_positions.append(
-            [
-                np.random.uniform(*goal_position_bounds["x"]),
-                np.random.uniform(*goal_position_bounds["y"]),
-                np.random.uniform(*goal_position_bounds["z"]),
-            ]
-        )
+    # for i in range(number_of_goal_positions_to_test):
+    #     goal_positions.append(
+    #         [
+    #             np.random.uniform(*goal_position_bounds["x"]),
+    #             np.random.uniform(*goal_position_bounds["y"]),
+    #             np.random.uniform(*goal_position_bounds["z"]),
+    #         ]
+    #     )
+
+    goal_positions = [[0.691397925624174, 0.002102621718463246, 0.12], [0.7098937836805903, -0.08694438235835333, 0.12], [0.7672410862743346, 0.035875201286842656, 0.12], [0.6627737729819734, 0.046329614423186144, 0.12], [0.6539269657617497, 0.00494133901407659, 0.12], [0.6132856638707109, -0.0991282973197782, 0.12], [0.7156702852353941, -0.003447701778067927, 0.12], [0.6054355103671692, 0.005484734697656202, 0.12], [0.7837080889282269, -0.030574751431943464, 0.12], [0.6534992783237846, -0.04376744160873707, 0.12]]
 
     # Generate test time array
     test_time_array = np.linspace(
@@ -248,6 +263,8 @@ if test_cartesian_accuracy_flag:
     init_cartesian_pos = init_cartesian_pos.copy()
     print(f"Initial joint angles: {init_joint_angles}")
     print(f"Initial cartesial position: {init_cartesian_pos}")
+
+    pos_errs = []
 
     for ii, goal_position in enumerate(goal_positions):
         print(f"\nTesting {ii+1} goal position------------------------------------")
@@ -298,6 +315,8 @@ if test_cartesian_accuracy_flag:
         print(
             f"MSE between computed position and goal: {mse}"
         )
+
+        pos_errs.append(position_error)
 
         # Optional: Visualize the cartesian trajectory over time
         if visualize:
@@ -375,3 +394,7 @@ if test_cartesian_accuracy_flag:
             plt.legend()
             plt.savefig(f"{DIR}/{DEPTH_STR}/testing/predicted_trajectories_{ii+1}.{EXT}")
             #plt.show()
+
+    formatted_vector = [float(f"{x:.3f}") for x in pos_errs]
+    print('Pos Errors: ')
+    print(*formatted_vector, sep=' & ')

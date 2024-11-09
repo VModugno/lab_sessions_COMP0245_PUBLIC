@@ -1,5 +1,6 @@
 import os
 import pickle
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -39,6 +40,7 @@ class JointAngleRegressor(nn.Module):
     def forward(self, x):
         return self.model(x)
 
+start_time = time.time()
 
 if training_flag:
     # Load the saved data
@@ -269,6 +271,10 @@ if training_flag:
 
         print("Training and visualization completed.")
 
+end_time = time.time()
+execution_time = end_time - start_time
+print("Execution time:", execution_time, "seconds")
+
 if test_cartesian_accuracy_flag:
 
     if not training_flag:
@@ -325,15 +331,18 @@ if test_cartesian_accuracy_flag:
     }
     # create a set of goal positions
     number_of_goal_positions_to_test = 10
-    goal_positions = []
-    for i in range(number_of_goal_positions_to_test):
-        goal_positions.append(
-            [
-                np.random.uniform(*goal_position_bounds["x"]),
-                np.random.uniform(*goal_position_bounds["y"]),
-                np.random.uniform(*goal_position_bounds["z"]),
-            ]
-        )
+    # goal_positions = []
+    # for i in range(number_of_goal_positions_to_test):
+    #     goal_positions.append(
+    #         [
+    #             np.random.uniform(*goal_position_bounds["x"]),
+    #             np.random.uniform(*goal_position_bounds["y"]),
+    #             np.random.uniform(*goal_position_bounds["z"]),
+    #         ]
+    #     )
+
+    goal_positions = [[0.691397925624174, 0.002102621718463246, 0.12], [0.7098937836805903, -0.08694438235835333, 0.12], [0.7672410862743346, 0.035875201286842656, 0.12], [0.6627737729819734, 0.046329614423186144, 0.12], [0.6539269657617497, 0.00494133901407659, 0.12], [0.6132856638707109, -0.0991282973197782, 0.12], [0.7156702852353941, -0.003447701778067927, 0.12], [0.6054355103671692, 0.005484734697656202, 0.12], [0.7837080889282269, -0.030574751431943464, 0.12], [0.6534992783237846, -0.04376744160873707, 0.12]]
+    pos_errs = []
 
     # Generate test time array
     test_time_array = np.linspace(
@@ -355,7 +364,7 @@ if test_cartesian_accuracy_flag:
     name_current_directory = "tests"
     root_dir = root_dir.replace(name_current_directory, "")
     # Initialize simulation interface
-    sim = pb.SimInterface(conf_file_name, conf_file_path_ext=root_dir)
+    sim = pb.SimInterface(conf_file_name, conf_file_path_ext=root_dir, use_gui=False)
 
     # Get active joint names from the simulation
     ext_names = sim.getNameActiveJoints()
@@ -442,6 +451,8 @@ if test_cartesian_accuracy_flag:
             f"MSE between computed position and goal: {mse}"
         )
 
+        pos_errs.append(position_error)
+
         # Optional: Visualize the cartesian trajectory over time
         if visualize:
             cartesian_positions_over_time = []
@@ -508,3 +519,7 @@ if test_cartesian_accuracy_flag:
             plt.legend()
             plt.savefig(f"{DIR}/testing/predicted_trajectory_{ii+1}.{EXT}")
             #plt.show()
+
+    formatted_vector = [float(f"{x:.3f}") for x in pos_errs]
+    print('Pos Errors: ')
+    print(*formatted_vector, sep=' & ')

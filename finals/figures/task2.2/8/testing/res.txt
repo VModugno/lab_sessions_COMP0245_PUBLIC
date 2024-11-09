@@ -93,92 +93,94 @@ Initial joint angles: [0.0, 1.0323, 0.0, 0.8247, 0.0, 1.57, 0.0]
 Initial cartesial position: [4.34899498e-01 4.83688696e-18 8.80952393e-01]
 
 Testing 1 goal position------------------------------------
-Goal position: [0.6368527007711081, 0.004787008226897302, 0.12]
-Computed cartesian position: [0.68654988 0.01540524 0.10353636]
-Predicted joint positions at final time step: [-0.01620822  1.73839498  0.0399964   0.05898656  0.16041484  0.97212386
-  0.16828159]
-Position error between computed position and goal: 0.053419175282705386
-MSE between computed position and goal: 0.0009512027626281341
+Goal position: [0.691397925624174, 0.002102621718463246, 0.12]
+Computed cartesian position: [0.70082742 0.01730336 0.12367386]
+Predicted joint positions at final time step: [-0.01317046  1.75750176  0.03967922  0.14079113  0.17316208  1.0564409
+  0.14499166]
+Position error between computed position and goal: 0.01826129908257294
+MSE between computed position and goal: 0.00011115834806105977
 [4.34899498e-01 4.83688696e-18 8.80952393e-01]
 
 Testing 2 goal position------------------------------------
-Goal position: [0.6007747963107989, 0.09429921393126237, 0.12]
-Computed cartesian position: [0.63634355 0.08020997 0.11280221]
-Predicted joint positions at final time step: [ 0.11118873  1.73839498 -0.12549002  0.06916045  0.17059052  0.63789234
-  0.17034679]
-Position error between computed position and goal: 0.03892879558602674
-MSE between computed position and goal: 0.0005051503752595517
-[4.34899498e-01 4.83688696e-18 8.80952393e-01]
-
-Testing 3 goal position------------------------------------
-Goal position: [0.7254449376544074, -0.0840412763721349, 0.12]
+Goal position: [0.7098937836805903, -0.08694438235835333, 0.12]
 Computed cartesian position: [ 0.71890963 -0.0928918   0.1255492 ]
 Predicted joint positions at final time step: [-0.12894458  1.75765909  0.06558509  0.13970847 -0.03245661  1.23975557
   0.0056701 ]
-Position error between computed position and goal: 0.012322162561337148
-MSE between computed position and goal: 5.061189672933962e-05
+Position error between computed position and goal: 0.012142936311160627
+MSE between computed position and goal: 4.9150300752301077e-05
+[4.34899498e-01 4.83688696e-18 8.80952393e-01]
+
+Testing 3 goal position------------------------------------
+Goal position: [0.7672410862743346, 0.035875201286842656, 0.12]
+Computed cartesian position: [0.69154229 0.01654046 0.0953382 ]
+Predicted joint positions at final time step: [ 0.04583511  1.7542831  -0.11894529  0.07009742 -0.01679104  1.03108174
+  0.08851509]
+Position error between computed position and goal: 0.08192889677086354
+MSE between computed position and goal: 0.002237448042030271
 [4.34899498e-01 4.83688696e-18 8.80952393e-01]
 
 Testing 4 goal position------------------------------------
-Goal position: [0.6224328444002313, -0.08161634568118498, 0.12]
-Computed cartesian position: [0.68645561 0.01089388 0.10730912]
-Predicted joint positions at final time step: [-0.02328986  1.73839498  0.04438203  0.06836082  0.16041484  0.9641847
-  0.16828159]
-Position error between computed position and goal: 0.11321710814991566
-MSE between computed position and goal: 0.004272704525943233
+Goal position: [0.6627737729819734, 0.046329614423186144, 0.12]
+Computed cartesian position: [0.64714831 0.08743947 0.1237709 ]
+Predicted joint positions at final time step: [ 0.11392811  1.75706937 -0.12218827  0.14339287  0.17316208  0.71293012
+  0.23328848]
+Position error between computed position and goal: 0.044140632584532526
+MSE between computed position and goal: 0.0006494651483208982
 [4.34899498e-01 4.83688696e-18 8.80952393e-01]
 
 Testing 5 goal position------------------------------------
-Goal position: [0.7460608414197732, 0.06788482141116728, 0.12]
-Computed cartesian position: [0.68921048 0.01804375 0.10738732]
-Predicted joint positions at final time step: [ 0.04583511  1.75722669 -0.11894529  0.10642263 -0.01679104  0.99530226
-  0.09136643]
-Position error between computed position and goal: 0.07664969416882948
-MSE between computed position and goal: 0.001958391872058364
-[4.34899498e-01 4.83688696e-18 8.80952393e-01]
-
-Testing 6 goal position------------------------------------
-Goal position: [0.7051347487379671, 0.007300554299092751, 0.12]
-Computed cartesian position: [ 0.72271802 -0.06042682  0.12317384]
-Predicted joint positions at final time step: [-0.08421413  1.75765909  0.0430943   0.13351883 -0.0193031   1.24555693
-  0.00253766]
-Position error between computed position and goal: 0.07004457226347353
-MSE between computed position and goal: 0.0016354140345243217
-[4.34899498e-01 4.83688696e-18 8.80952393e-01]
-
-Testing 7 goal position------------------------------------
-Goal position: [0.6796292365387785, -0.036157790058852404, 0.12]
+Goal position: [0.6539269657617497, 0.00494133901407659, 0.12]
 Computed cartesian position: [0.70076576 0.01731844 0.12331964]
 Predicted joint positions at final time step: [-0.01317046  1.75750176  0.03967922  0.13991611  0.17316208  1.0564409
   0.14499166]
-Position error between computed position and goal: 0.0575975711642048
-MSE between computed position and goal: 0.0011058267346718787
+Position error between computed position and goal: 0.04856011858221
+MSE between computed position and goal: 0.0007860283722394323
+[4.34899498e-01 4.83688696e-18 8.80952393e-01]
+
+Testing 6 goal position------------------------------------
+Goal position: [0.6132856638707109, -0.0991282973197782, 0.12]
+Computed cartesian position: [ 0.68693345 -0.00192906  0.10760321]
+Predicted joint positions at final time step: [-0.04474024  1.73839498  0.06212528  0.06787662  0.16041484  0.96619992
+  0.16828159]
+Position error between computed position and goal: 0.12257801124036105
+MSE between computed position and goal: 0.005008456279880693
+[4.34899498e-01 4.83688696e-18 8.80952393e-01]
+
+Testing 7 goal position------------------------------------
+Goal position: [0.7156702852353941, -0.003447701778067927, 0.12]
+Computed cartesian position: [ 0.72271802 -0.06042682  0.12317384]
+Predicted joint positions at final time step: [-0.08421413  1.75765909  0.0430943   0.13351883 -0.0193031   1.24555693
+  0.00253766]
+Position error between computed position and goal: 0.05750099016530113
+MSE between computed position and goal: 0.0011021212899966857
 [4.34899498e-01 4.83688696e-18 8.80952393e-01]
 
 Testing 8 goal position------------------------------------
-Goal position: [0.6631476140082886, 0.09485046509497314, 0.12]
-Computed cartesian position: [0.6739601  0.09587987 0.12475   ]
-Predicted joint positions at final time step: [ 0.12016032  1.75706937 -0.14026981  0.15460453  0.18333775  0.90958773
-  0.23535368]
-Position error between computed position and goal: 0.011854619821498918
-MSE between computed position and goal: 4.684400370409168e-05
+Goal position: [0.6054355103671692, 0.005484734697656202, 0.12]
+Computed cartesian position: [0.68654988 0.01540524 0.10353636]
+Predicted joint positions at final time step: [-0.01620822  1.73839498  0.0399964   0.05898656  0.16041484  0.97212386
+  0.16828159]
+Position error between computed position and goal: 0.08336071875090979
+MSE between computed position and goal: 0.0023163364768894277
 [4.34899498e-01 4.83688696e-18 8.80952393e-01]
 
 Testing 9 goal position------------------------------------
-Goal position: [0.69286109329095, 0.09784107485334004, 0.12]
-Computed cartesian position: [0.6739601  0.09587987 0.12475   ]
-Predicted joint positions at final time step: [ 0.12016032  1.75706937 -0.14026981  0.15460453  0.18333775  0.90958773
-  0.23535368]
-Position error between computed position and goal: 0.019587149612647407
-MSE between computed position and goal: 0.00012788547664941116
+Goal position: [0.7837080889282269, -0.030574751431943464, 0.12]
+Computed cartesian position: [ 0.76595525 -0.05720338  0.12121049]
+Predicted joint positions at final time step: [-7.57591867e-02  1.75428310e+00  3.88809178e-02  7.11351946e-02
+ -1.67910418e-02  1.62486503e+00 -1.26836894e-03]
+Position error between computed position and goal: 0.03202674719286051
+MSE between computed position and goal: 0.0003419041785851327
 [4.34899498e-01 4.83688696e-18 8.80952393e-01]
 
 Testing 10 goal position------------------------------------
-Goal position: [0.7120681548319912, 0.0702130551659543, 0.12]
-Computed cartesian position: [0.67878992 0.01637106 0.11923199]
-Predicted joint positions at final time step: [ 0.04288444  1.75722669 -0.11877319  0.13699559 -0.0193031   0.90204616
-  0.09083447]
-Position error between computed position and goal: 0.06330079934940791
-MSE between computed position and goal: 0.001335663732758
+Goal position: [0.6534992783237846, -0.04376744160873707, 0.12]
+Computed cartesian position: [0.70076576 0.01731844 0.12331964]
+Predicted joint positions at final time step: [-0.01317046  1.75750176  0.03967922  0.13991611  0.17316208  1.0564409
+  0.14499166]
+Position error between computed position and goal: 0.07730863805246756
+MSE between computed position and goal: 0.0019922085058424782
 [4.34899498e-01 4.83688696e-18 8.80952393e-01]
+Pos Errors: 
+0.018 & 0.012 & 0.082 & 0.044 & 0.049 & 0.123 & 0.058 & 0.083 & 0.032 & 0.077
 argv[0]=
