@@ -37,7 +37,7 @@ def create_prediction_range_kd0():
     kd0_range = np.linspace(0.0, 100, 200).reshape(-1, 1)
     return kd0_range
 
-def plot_gp_results_1d(kp0_values, kd0_values, tracking_errors, gp_kp0, gp_kd0):
+def plot_gp_results_1d(kp0_values, kd0_values, tracking_errors, gp_kp0, gp_kd0, filename):
     # Create prediction ranges
     kp0_pred = create_prediction_range_kp0()
     kd0_pred = create_prediction_range_kd0()
@@ -57,7 +57,7 @@ def plot_gp_results_1d(kp0_values, kd0_values, tracking_errors, gp_kp0, gp_kd0):
                     alpha=0.5, fc='orange', ec='None', label='95% confidence interval')
     #plt.scatter(X, y, c='blue', s=50, zorder=10, edgecolors=(0, 0, 0), label='Observations')
     #plt.plot(X_pred, np.sin(X_pred), 'r:', lw=1.5, label='True function')
-    plt.title("Gaussian process regression on noise-free dataset")
+    plt.title("Gaussian process regression for joint_0 Kp on noise-free dataset")
     plt.xlabel('X')
     plt.ylabel('f(X)')
     plt.legend(loc='upper left')
@@ -91,7 +91,7 @@ def plot_gp_results_1d(kp0_values, kd0_values, tracking_errors, gp_kp0, gp_kd0):
                     alpha=0.5, fc='orange', ec='None', label='95% confidence interval')
     #plt.scatter(X, y, c='blue', s=50, zorder=10, edgecolors=(0, 0, 0), label='Observations')
     #plt.plot(X_pred, np.sin(X_pred), 'r:', lw=1.5, label='True function')
-    plt.title("Gaussian process regression on noise-free dataset")
+    plt.title("Gaussian process regression for joint_0 Kd on noise-free dataset")
     plt.xlabel('X')
     plt.ylabel('f(X)')
     plt.legend(loc='upper left')
@@ -111,6 +111,8 @@ def plot_gp_results_1d(kp0_values, kd0_values, tracking_errors, gp_kp0, gp_kd0):
     #plt.xlabel('kd0')
     #plt.ylabel('Tracking Error')
     #plt.legend()
+
+    plt.savefig(f'{filename}.png')
     
     plt.tight_layout()
     plt.show()

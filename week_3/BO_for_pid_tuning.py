@@ -14,7 +14,7 @@ from gp_functions import fit_gp_model_1d, plot_gp_results_1d
 # Configuration for the simulation
 conf_file_name = "pandaconfig.json"  # Configuration file for the robot
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-sim = pb.SimInterface(conf_file_name, conf_file_path_ext = cur_dir)  # Initialize simulation interface
+sim = pb.SimInterface(conf_file_name, conf_file_path_ext = cur_dir, use_gui=False)  # Initialize simulation interface
 
 # Get active joint names from the simulation
 ext_names = sim.getNameActiveJoints()
@@ -74,7 +74,8 @@ def simulate_with_given_pid_values(sim_, kp, kd, episode_duration=10):
         # Compute sinusoidal reference trajectory
         q_des, qd_des = ref.get_values(current_time)  # Desired position and velocity
         # Control command
-        cmd.tau_cmd = feedback_lin_ctrl(dyn_model, q_mes, qd_mes, q_des, qd_des, kp, kd)  # Zero torque command
+        tau_cmd = feedback_lin_ctrl(dyn_model, q_mes, qd_mes, q_des, qd_des, kp, kd)  # Zero torque command
+        cmd.SetControlCmd(tau_cmd, ["torque"]*7)
         sim_.Step(cmd, "torque")  # Simulation step with torque command
 
         # Exit logic with 'q' key
@@ -116,9 +117,12 @@ def objective(params):
     episode_duration = 10
     
     # TODO Call the simulation with given kp and kd values
+    tracking_error = simulate_with_given_pid_values(sim, kp, kd)
 
     # TODO Collect data for the first kp and kd  
-    
+    kp0_values.append(kp[0])
+    kd0_values.append(kd[0])
+    tracking_errors.append(tracking_error)
     
     return tracking_error
 
@@ -143,13 +147,17 @@ def main():
     n_restarts_optimizer=10  # Optional for better hyperparameter optimization
     )
 
+    acq_func = 'EI'  # TODO change this LCB': Lower Confidence Bound 'EI': Expected Improvement 'PI': Probability of Improvement
+    n_calls = 50
+    krn = 'default'
+
     # Perform Bayesian optimization
     result = gp_minimize(
     objective,
     space,
-    n_calls=10,
+    n_calls=n_calls,
     base_estimator=gp,  # Use the custom Gaussian Process Regressor
-    acq_func='EI',      # TODO change this LCB': Lower Confidence Bound 'EI': Expected Improvement 'PI': Probability of Improvement
+    acq_func=acq_func,
     random_state=42)
     
     # Extract the optimal values
@@ -165,11 +173,18 @@ def main():
     gp_kp0 = fit_gp_model_1d(kp0_values_array, tracking_errors_array)
     gp_kd0 = fit_gp_model_1d(kd0_values_array, tracking_errors_array)
 
-    # Plot the results
-    plot_gp_results_1d(kp0_values_array, kd0_values_array, tracking_errors_array, gp_kp0, gp_kd0)
+    filename = f'plots/acq_func_{acq_func}_n_calls_{n_calls}_kernel_{krn}'
 
+    # Plot the results
+    plot_gp_results_1d(kp0_values_array, kd0_values_array, tracking_errors_array, gp_kp0, gp_kd0,
+        filename=filename,
+    )
 
     print(f"Optimal Kp: {best_kp}, Optimal Kd: {best_kd}")
+
+
+    with open(f'{filename}.txt', "w") as file:
+        file.write(f"Optimal Kp: {best_kp}, Optimal Kd: {best_kd}")
 
 if __name__ == "__main__":
     main()
