@@ -5,6 +5,7 @@ import joblib  # For saving and loading models
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 
 TASK = 2.2
@@ -12,6 +13,9 @@ CUR_DIR = os.path.dirname(os.path.realpath(__file__))  # current directory
 DIR = os.path.join(CUR_DIR, "figures", f"task{TASK}")  # figure directory
 EXT = "pdf"  # figure extension
 os.makedirs(DIR, exist_ok=True)  # create figure directory if not exist
+RF_MODEL_DIR = "rf"
+DEPTH = 8
+DEPTH_STR = str(DEPTH) if DEPTH else 'none'
 print(f"Performing Task {TASK}...")
 
 
@@ -74,7 +78,7 @@ if training_flag:
             # Initialize the Random Forest regressor
             rf_model = RandomForestRegressor(
                 n_estimators=100,  # Number of trees
-                max_depth=None,  # Maximum depth of the tree
+                max_depth=DEPTH,  # Maximum depth of the tree
                 random_state=42,
                 n_jobs=-1,  # Use all available cores
             )
@@ -93,10 +97,13 @@ if training_flag:
             print(f"\nJoint {joint_idx+1}")
             print(f"Train MSE: {train_mse:.6f}")
             print(f"Test MSE: {test_mse:.6f}")
+            depths = [e.get_depth() for e in rf_model.estimators_]
+            print(f"Max Depth of Random Forest: {max(depths)}")
 
             # Save the trained model
+            os.makedirs(os.path.join(script_dir, RF_MODEL_DIR, DEPTH_STR), exist_ok=True)
             model_filename = os.path.join(
-                script_dir, f"rf_joint{joint_idx+1}.joblib"
+                script_dir, RF_MODEL_DIR, DEPTH_STR, f"rf_joint{joint_idx+1}.joblib"
             )
             joblib.dump(rf_model, model_filename)
             print(f"Model for Joint {joint_idx+1} saved as {model_filename}")
@@ -130,7 +137,9 @@ if training_flag:
                 )
                 plt.legend()
                 plt.grid(True)
-                plt.show()
+                os.makedirs(f"{DIR}/{DEPTH_STR}", exist_ok=True)
+                plt.savefig(f"{DIR}/{DEPTH_STR}/predicted_pos_goal_{joint_idx+1}.{EXT}")
+                #plt.show()
 
         print("Training and visualization completed.")
 
@@ -162,7 +171,7 @@ if test_cartesian_accuracy_flag:
 
         # The name of the saved model
         model_filename = os.path.join(
-            script_dir, f"rf_joint{joint_idx+1}.joblib"
+            script_dir, RF_MODEL_DIR, DEPTH_STR, f"rf_joint{joint_idx+1}.joblib"
         )
 
         try:
@@ -215,7 +224,7 @@ if test_cartesian_accuracy_flag:
     name_current_directory = "tests"
     root_dir = root_dir.replace(name_current_directory, "")
     # Initialize simulation interface
-    sim = pb.SimInterface(conf_file_name, conf_file_path_ext=root_dir)
+    sim = pb.SimInterface(conf_file_name, conf_file_path_ext=root_dir, use_gui=False)
 
     # Get active joint names from the simulation
     ext_names = sim.getNameActiveJoints()
@@ -236,11 +245,12 @@ if test_cartesian_accuracy_flag:
     init_cartesian_pos, init_R = dyn_model.ComputeFK(
         init_joint_angles, controlled_frame_name
     )
+    init_cartesian_pos = init_cartesian_pos.copy()
     print(f"Initial joint angles: {init_joint_angles}")
+    print(f"Initial cartesial position: {init_cartesian_pos}")
 
-    for goal_position in goal_positions:
-        print("\nTesting new goal position------------------------------------")
-        print(f"Goal position: {goal_position}")
+    for ii, goal_position in enumerate(goal_positions):
+        print(f"\nTesting {ii+1} goal position------------------------------------")
 
         # Create test input features
         test_goal_positions = np.tile(
@@ -273,6 +283,7 @@ if test_cartesian_accuracy_flag:
             final_predicted_joint_positions, controlled_frame_name
         )
 
+        print(f"Goal position: {goal_position}")
         print(f"Computed cartesian position: {final_cartesian_pos}")
         print(
             f"Predicted joint positions at final time step: {final_predicted_joint_positions}"
@@ -282,6 +293,10 @@ if test_cartesian_accuracy_flag:
         position_error = np.linalg.norm(final_cartesian_pos - goal_position)
         print(
             f"Position error between computed position and goal: {position_error}"
+        )
+        mse = mean_squared_error(goal_position, final_cartesian_pos)
+        print(
+            f"MSE between computed position and goal: {mse}"
         )
 
         # Optional: Visualize the cartesian trajectory over time
@@ -315,12 +330,19 @@ if test_cartesian_accuracy_flag:
                 cartesian_positions_over_time[:, 2],
                 label="Z Position",
             )
+            print(init_cartesian_pos)
+            plt.scatter([0], [init_cartesian_pos[0]], s=50, c='blue', label="Init X position")
+            plt.scatter([0], [init_cartesian_pos[1]], s=50, c='orange', label="Init Y position")
+            plt.scatter([0], [init_cartesian_pos[2]], s=50, c='green', label="Init Z position")
+            plt.scatter([test_time_array[-1]] * 3, goal_position, s=50, c='red', label="Goal position")
             plt.xlabel("Time (s)")
             plt.ylabel("Cartesian Position (m)")
             plt.title("Predicted Cartesian Positions Over Time")
             plt.legend()
             plt.grid(True)
-            plt.show()
+            os.makedirs(f"{DIR}/{DEPTH_STR}/testing", exist_ok=True)
+            plt.savefig(f"{DIR}/{DEPTH_STR}/testing/predicted_pos_goal_{ii+1}.{EXT}")
+            #plt.show()
 
             # Plot the trajectory in 3D space
             from mpl_toolkits.mplot3d import Axes3D
@@ -334,6 +356,12 @@ if test_cartesian_accuracy_flag:
                 label="Predicted Trajectory",
             )
             ax.scatter(
+                init_cartesian_pos[0], 
+                init_cartesian_pos[1],
+                init_cartesian_pos[2], 
+                color='green', 
+                label="Init position")
+            ax.scatter(
                 goal_position[0],
                 goal_position[1],
                 goal_position[2],
@@ -345,4 +373,5 @@ if test_cartesian_accuracy_flag:
             ax.set_zlabel("Z Position (m)")
             ax.set_title("Predicted Cartesian Trajectory")
             plt.legend()
-            plt.show()
+            plt.savefig(f"{DIR}/{DEPTH_STR}/testing/predicted_trajectories_{ii+1}.{EXT}")
+            #plt.show()

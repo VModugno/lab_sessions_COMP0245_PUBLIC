@@ -1,0 +1,184 @@
+Performing Task 2.2...
+Max Depth of Random Forest: 6
+
+Joint 1
+Train MSE: 0.000005
+Test MSE: 0.000004
+Model for Joint 1 saved as /Users/mariaizobova/Desktop/ucl/forks/Machine_Learning_labs/finals/rf/6/rf_joint1.joblib
+Visualizing results for Joint 1...
+Max Depth of Random Forest: 6
+
+Joint 2
+Train MSE: 0.000018
+Test MSE: 0.000212
+Model for Joint 2 saved as /Users/mariaizobova/Desktop/ucl/forks/Machine_Learning_labs/finals/rf/6/rf_joint2.joblib
+Visualizing results for Joint 2...
+Max Depth of Random Forest: 6
+
+Joint 3
+Train MSE: 0.000002
+Test MSE: 0.000002
+Model for Joint 3 saved as /Users/mariaizobova/Desktop/ucl/forks/Machine_Learning_labs/finals/rf/6/rf_joint3.joblib
+Visualizing results for Joint 3...
+Max Depth of Random Forest: 6
+
+Joint 4
+Train MSE: 0.000601
+Test MSE: 0.000799
+Model for Joint 4 saved as /Users/mariaizobova/Desktop/ucl/forks/Machine_Learning_labs/finals/rf/6/rf_joint4.joblib
+Visualizing results for Joint 4...
+Max Depth of Random Forest: 6
+
+Joint 5
+Train MSE: 0.000002
+Test MSE: 0.000002
+Model for Joint 5 saved as /Users/mariaizobova/Desktop/ucl/forks/Machine_Learning_labs/finals/rf/6/rf_joint5.joblib
+Visualizing results for Joint 5...
+Max Depth of Random Forest: 6
+
+Joint 6
+Train MSE: 0.000796
+Test MSE: 0.000773
+Model for Joint 6 saved as /Users/mariaizobova/Desktop/ucl/forks/Machine_Learning_labs/finals/rf/6/rf_joint6.joblib
+Visualizing results for Joint 6...
+Max Depth of Random Forest: 6
+
+Joint 7
+Train MSE: 0.000001
+Test MSE: 0.000002
+Model for Joint 7 saved as /Users/mariaizobova/Desktop/ucl/forks/Machine_Learning_labs/finals/rf/6/rf_joint7.joblib
+Visualizing results for Joint 7...
+Training and visualization completed.
+
+Testing the model with new goal positions...
+cur_line=  # Define cube dimensions (20 cm)
+
+cur_line=  cube_size = 0.1  # meters
+
+cur_line=  
+
+cur_line=  # Define collision shape (box)
+
+cur_line=  collision_shape_id = self.pybullet_client.createCollisionShape(shapeType=self.pybullet_client.GEOM_BOX,halfExtents=[cube_size / 2] * 3)
+
+cur_line=  
+
+cur_line=  # Define visual shape (optional, for coloring)
+
+cur_line=  visual_shape_id = self.pybullet_client.createVisualShape(shapeType=self.pybullet_client.GEOM_BOX,halfExtents=[cube_size / 2] * 3,rgbaColor=[0.5, 0.5, 0.5, 1])
+
+cur_line=  
+
+cur_line=  # Define mass and inertia
+
+cur_line=  mass = 1.0  # kilograms
+
+cur_line=  # Inertia is automatically calculated by PyBullet if not provided
+
+cur_line=  
+
+cur_line=  # Define the position (50 cm along Y-axis and 10 cm above the ground)
+
+cur_line=  position = [0.7, 0.0, cube_size / 2]  # x, y, z in meters
+
+cur_line=  orientation = self.pybullet_client.getQuaternionFromEuler([0, 0, 0])  # No rotation
+
+cur_line=  
+
+cur_line=  # Create the multi-body (the cube)
+
+cur_line=  cube_id = self.pybullet_client.createMultiBody(baseMass=mass,baseCollisionShapeIndex=collision_shape_id,baseVisualShapeIndex=visual_shape_id,basePosition=position,baseOrientation=orientation)
+file path ext:  /Users/mariaizobova/Desktop/ucl/forks/Machine_Learning_labs/finals
+Initial joint angles: [0.0, 1.0323, 0.0, 0.8247, 0.0, 1.57, 0.0]
+Initial cartesial position: [4.34899498e-01 4.83688696e-18 8.80952393e-01]
+
+Testing 1 goal position------------------------------------
+Goal position: [0.7797409194755396, -0.004936604000246009, 0.12]
+Computed cartesian position: [ 0.76241824 -0.05575167  0.12324455]
+Predicted joint positions at final time step: [-7.38419302e-02  1.76016019e+00  3.87614694e-02  9.07722667e-02
+ -1.67323855e-02  1.59124349e+00 -1.26836894e-03]
+Position error between computed position and goal: 0.05378451163568189
+MSE between computed position and goal: 0.0009642578972962669
+[4.34899498e-01 4.83688696e-18 8.80952393e-01]
+
+Testing 2 goal position------------------------------------
+Goal position: [0.7765456133153522, -0.060623611287044146, 0.12]
+Computed cartesian position: [ 0.76241824 -0.05575167  0.12324455]
+Predicted joint positions at final time step: [-7.38419302e-02  1.76016019e+00  3.87614694e-02  9.07722667e-02
+ -1.67323855e-02  1.59124349e+00 -1.26836894e-03]
+Position error between computed position and goal: 0.015292009473509453
+MSE between computed position and goal: 7.794851791263428e-05
+[4.34899498e-01 4.83688696e-18 8.80952393e-01]
+
+Testing 3 goal position------------------------------------
+Goal position: [0.6576720482145063, -0.016136294153904676, 0.12]
+Computed cartesian position: [0.69744949 0.01652216 0.1232487 ]
+Predicted joint positions at final time step: [-0.01304719  1.76042599  0.03904735  0.14620202  0.16643567  1.03379035
+  0.119419  ]
+Position error between computed position and goal: 0.051569120119847565
+MSE between computed position and goal: 0.0008864580499784222
+[4.34899498e-01 4.83688696e-18 8.80952393e-01]
+
+Testing 4 goal position------------------------------------
+Goal position: [0.6417939287581007, -0.09699766326351622, 0.12]
+Computed cartesian position: [ 0.68655566 -0.00165797  0.11086531]
+Predicted joint positions at final time step: [-0.04426678  1.73532469  0.06197755  0.07081037  0.16032966  0.95659126
+  0.16816365]
+Position error between computed position and goal: 0.10571997482814485
+MSE between computed position and goal: 0.0037255710258878604
+[4.34899498e-01 4.83688696e-18 8.80952393e-01]
+
+Testing 5 goal position------------------------------------
+Goal position: [0.74415434760346, 0.01908614247995137, 0.12]
+Computed cartesian position: [0.67636805 0.01752961 0.1087898 ]
+Predicted joint positions at final time step: [ 0.0452525   1.76042599 -0.11549759  0.11545151 -0.01673239  0.9022294
+  0.1034092 ]
+Position error between computed position and goal: 0.06872462184831343
+MSE between computed position and goal: 0.0015743578827312268
+[4.34899498e-01 4.83688696e-18 8.80952393e-01]
+
+Testing 6 goal position------------------------------------
+Goal position: [0.7926187084286382, -0.060488829065684806, 0.12]
+Computed cartesian position: [ 0.76241824 -0.05575167  0.12324455]
+Predicted joint positions at final time step: [-7.38419302e-02  1.76016019e+00  3.87614694e-02  9.07722667e-02
+ -1.67323855e-02  1.59124349e+00 -1.26836894e-03]
+Position error between computed position and goal: 0.030741438181299176
+MSE between computed position and goal: 0.00031501200715154627
+[4.34899498e-01 4.83688696e-18 8.80952393e-01]
+
+Testing 7 goal position------------------------------------
+Goal position: [0.7332366017744474, -0.05047754598071035, 0.12]
+Computed cartesian position: [ 0.75170149 -0.06192226  0.12689969]
+Predicted joint positions at final time step: [-0.08262967  1.76042599  0.04237883  0.11545151 -0.01952354  1.48984448
+  0.00288756]
+Position error between computed position and goal: 0.022793405735473397
+MSE between computed position and goal: 0.00017317978167397054
+[4.34899498e-01 4.83688696e-18 8.80952393e-01]
+
+Testing 8 goal position------------------------------------
+Goal position: [0.6395340204491524, 0.08145807661515389, 0.12]
+Computed cartesian position: [0.61148618 0.07261407 0.12531623]
+Predicted joint positions at final time step: [ 0.10391359  1.73532469 -0.10740936  0.06329713  0.16032966  0.4306369
+  0.16816365]
+Position error between computed position and goal: 0.02988578649345976
+MSE between computed position and goal: 0.0002977200781108873
+[4.34899498e-01 4.83688696e-18 8.80952393e-01]
+
+Testing 9 goal position------------------------------------
+Goal position: [0.7498744761547621, 0.006145510927259928, 0.12]
+Computed cartesian position: [ 0.7522257  -0.05521502  0.12690524]
+Predicted joint positions at final time step: [-0.07384193  1.76042599  0.03876147  0.11545151 -0.01673239  1.48984448
+  0.00288756]
+Position error between computed position and goal: 0.06179259626932926
+MSE between computed position and goal: 0.001272774984568108
+[4.34899498e-01 4.83688696e-18 8.80952393e-01]
+
+Testing 10 goal position------------------------------------
+Goal position: [0.7977538352626135, 0.07364714830200858, 0.12]
+Computed cartesian position: [0.67939789 0.01663454 0.09932926]
+Predicted joint positions at final time step: [ 0.0452525   1.76016019 -0.11549759  0.09077227 -0.01673239  0.93921526
+  0.10098102]
+Position error between computed position and goal: 0.13298814032580047
+MSE between computed position and goal: 0.005895281822438266
+[4.34899498e-01 4.83688696e-18 8.80952393e-01]
+argv[0]=
